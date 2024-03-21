@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"time"
 
 	"github.com/ankitdas09/interntask-tsds/internal/api"
 	"github.com/ankitdas09/interntask-tsds/internal/model"
@@ -49,8 +48,8 @@ func InsertNewCitizen(c *api.CreateCitizen) (*model.Citizen, error) {
 	citizen.ID = primitive.NewObjectID()
 	citizen.FirstName = c.FirstName
 	citizen.LastName = c.LastName
-	// citizen.DateOfBirth = c.DateOfBirth
-	citizen.DateOfBirth = time.Now()
+	citizen.DateOfBirth = c.DateOfBirth
+	// citizen.DateOfBirth = time.Now()
 	citizen.Gender = c.Gender
 	citizen.Address = c.Address
 	citizen.City = c.City
