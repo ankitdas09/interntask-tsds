@@ -4,9 +4,29 @@ import (
 	"log"
 
 	"github.com/ankitdas09/interntask-tsds/internal/api"
+	"github.com/ankitdas09/interntask-tsds/internal/util"
 	"github.com/ankitdas09/interntask-tsds/services"
 	"github.com/labstack/echo/v4"
 )
+
+func FetchCitizens(c echo.Context) error {
+	paramPage := c.QueryParam("page")
+	paramLimit := c.QueryParam("limit")
+	page, limit := util.ParsePagination(paramPage, paramLimit)
+	log.Println(page, limit)
+
+	citizens, err := services.FetchCitizens(page, limit)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if len(*citizens) == 0 {
+		return c.String(404, "no citizens found")
+	}
+
+	return c.JSON(200, citizens)
+}
 
 func CreateCitizen(c echo.Context) error {
 	var newCitizen api.CreateCitizen

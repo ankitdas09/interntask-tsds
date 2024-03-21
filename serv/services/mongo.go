@@ -2,12 +2,14 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/ankitdas09/interntask-tsds/internal/api"
 	"github.com/ankitdas09/interntask-tsds/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var client *mongo.Client
@@ -18,6 +20,28 @@ func InitMongoService(c *mongo.Client) {
 	coll = client.Database("main").Collection("citizen")
 }
 
+func FetchCitizens(page int, limit int) (*[]model.Citizen, error) {
+	skip := (page - 1) * limit
+	opts := options.Find()
+	opts.SetSkip(int64(skip))
+	opts.SetLimit(int64(limit))
+	filter := bson.D{{}}
+
+	cursor, err := coll.Find(context.TODO(), filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var citizens []model.Citizen
+	err = cursor.All(context.TODO(), &citizens)
+	if err != nil {
+		return nil, err
+	}
+
+	return &citizens, nil
+}
+
 // Returns newly createded Citizen's _id and possibly an err
 func InsertNewCitizen(c *api.CreateCitizen) (*model.Citizen, error) {
 	var citizen model.Citizen
@@ -25,7 +49,8 @@ func InsertNewCitizen(c *api.CreateCitizen) (*model.Citizen, error) {
 	citizen.ID = primitive.NewObjectID()
 	citizen.FirstName = c.FirstName
 	citizen.LastName = c.LastName
-	citizen.DateOfBirth = c.DateOfBirth
+	// citizen.DateOfBirth = c.DateOfBirth
+	citizen.DateOfBirth = time.Now()
 	citizen.Gender = c.Gender
 	citizen.Address = c.Address
 	citizen.City = c.City
