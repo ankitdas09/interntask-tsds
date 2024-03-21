@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/ankitdas09/interntask-tsds/internal/handler"
 	"github.com/ankitdas09/interntask-tsds/services"
+	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,23 +25,15 @@ func goDotEnvVariable(key string) string {
 	return os.Getenv(key)
 }
 
-func initDB() *mongo.Client {
-	mongoUri := goDotEnvVariable("MONGO_URI")
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoUri))
-	if err != nil {
-		log.Panic(err)
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	if err := cv.validator.Struct(i); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			log.Panic(err)
-		}
-	}()
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Panic(err)
-	}
-	log.Println("Connected to database.")
-	return client
+	return nil
 }
 
 func main() {
@@ -59,13 +53,17 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
 	log.Println("Connected to database.")
 	services.InitMongoService(client)
 
 	log.Println("Starting server on", port)
 	app := echo.New()
+	app.Validator = &CustomValidator{validator: validator.New()}
 
-	app.GET("/insert", handler.CreateUser)
+	app.GET("/insert", handler.CreateCitizen)
+	app.GET("/update", handler.UpdateCitizen)
+	app.DELETE("/:id", handler.DeleteCitizen)
 
 	app.Logger.Fatal(app.Start(":" + port))
 }

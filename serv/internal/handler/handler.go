@@ -1,36 +1,64 @@
 package handler
 
 import (
-	"fmt"
 	"log"
-	"time"
 
-	"github.com/ankitdas09/interntask-tsds/internal/model"
+	"github.com/ankitdas09/interntask-tsds/internal/api"
 	"github.com/ankitdas09/interntask-tsds/services"
 	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateUser(c echo.Context) error {
-	newUser := model.User{
-		ID:          primitive.NewObjectID(),
-		FirstName:   "FNAME",
-		LastName:    "LName",
-		DateOfBirth: time.Now(),
-		Gender:      "Male",
-		Address:     "IIT Ghy",
-		City:        "Ghy",
-		State:       "Assam",
-		Pincode:     "781039",
-	}
-	_id, err := services.InsertNewUser(&newUser)
+func CreateCitizen(c echo.Context) error {
+	var newCitizen api.CreateCitizen
+
+	err := c.Bind(&newCitizen)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	return c.String(201, fmt.Sprintf("Inserted %s", _id))
+	err = c.Validate(newCitizen)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	_newCitizen, err := services.InsertNewCitizen(&newCitizen)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return c.JSON(201, _newCitizen)
 }
 
-func DeleteUser(c echo.Context) error {
-	return c.String(201, fmt.Sprintf("Deleted"))
+func UpdateCitizen(c echo.Context) error {
+	var citizen api.UpdateCitizen
+
+	err := c.Bind(&citizen)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = c.Validate(citizen)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = services.UpdateCitizen(&citizen)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return c.String(200, "Updated")
+}
+
+func DeleteCitizen(c echo.Context) error {
+	id := c.Param("id")
+	err := services.DeleteCitizen(id)
+	if err != nil {
+		return err
+	}
+	return c.String(200, "Deleted")
 }
