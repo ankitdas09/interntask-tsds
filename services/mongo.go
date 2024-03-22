@@ -19,6 +19,14 @@ func InitMongoService(c *mongo.Client) {
 	coll = client.Database("main").Collection("citizen")
 }
 
+func GetCount() (int64, error) {
+	count, err := coll.CountDocuments(context.TODO(), map[string]interface{}{})
+	if err != nil {
+		return -1, err
+	}
+	return count, nil
+}
+
 func FetchCitizens(page int, limit int) (*[]model.Citizen, error) {
 	skip := (page - 1) * limit
 	opts := options.Find()

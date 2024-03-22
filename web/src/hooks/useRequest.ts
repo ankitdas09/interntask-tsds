@@ -3,8 +3,8 @@ import axios, { AxiosRequestConfig } from "axios";
 
 function useRequest({ url, method, body }: { url: string; method: string; body: unknown }) {
     const [resp, setResp] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState(null);
 
     const fetch = () => {
         const config: AxiosRequestConfig = { method, url, data: body };
@@ -12,7 +12,7 @@ function useRequest({ url, method, body }: { url: string; method: string; body: 
             .then((response) => {
                 setResp(response.data);
                 setLoading(false);
-                setError("");
+                setError(null);
             })
             .catch((e) => {
                 setError(e);
@@ -24,7 +24,7 @@ function useRequest({ url, method, body }: { url: string; method: string; body: 
         fetch();
     }, []);
 
-    return { response: resp, loading, error };
+    return {response: resp, loading, error }
 }
 
 export default useRequest;

@@ -20,11 +20,11 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { TCitizen } from "../../../types";
 
-type Props = {
-    citizen: TCitizen;
-};
+// type Props = {
+//     citizen: TCitizen;
+// };
 
-function CEditor(props: Props) {
+function CAddCitizen() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [data, setData] = useState<TCitizen>({
@@ -42,17 +42,17 @@ function CEditor(props: Props) {
     useEffect(() => {
         setLoading(false);
         setError(false);
-        setData({
-            _id: props.citizen._id,
-            first_name: props.citizen.first_name,
-            last_name: props.citizen.last_name,
-            date_of_birth: props.citizen.date_of_birth,
-            gender: props.citizen.gender,
-            address: props.citizen.address,
-            city: props.citizen.city,
-            state: props.citizen.state,
-            pincode: props.citizen.pincode,
-        });
+        // setData({
+        //     _id: props.citizen._id,
+        //     first_name: props.citizen.first_name,
+        //     last_name: props.citizen.last_name,
+        //     date_of_birth: props.citizen.date_of_birth,
+        //     gender: props.citizen.gender,
+        //     address: props.citizen.address,
+        //     city: props.citizen.city,
+        //     state: props.citizen.state,
+        //     pincode: props.citizen.pincode,
+        // });
     }, []);
 
     return (
@@ -60,13 +60,13 @@ function CEditor(props: Props) {
             {loading}
             {error}
             <DialogTrigger asChild>
-                <Button variant="outline">Edit Profile</Button>
+                <Button variant="outline">Add Citizen</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px] max-h-[700px] overflow-scroll">
                 <DialogHeader>
-                    <DialogTitle>Edit Citizen Profile</DialogTitle>
+                    <DialogTitle>Add Citizen</DialogTitle>
                     <DialogDescription>
-                        Make changes to your profile here. Click save when you're done.
+                        Add new citizen.
                     </DialogDescription>
                 </DialogHeader>
                 <form action="/">
@@ -118,7 +118,7 @@ function CEditor(props: Props) {
                             <Label htmlFor="gender" className="text-right">
                                 Gender
                             </Label>
-                            <Select required defaultValue={data.gender} onValueChange={(e) => {
+                            <Select required onValueChange={(e) => {
                                 setData({...data, gender: e})
                             }}>
                                 <SelectTrigger className="w-[342px]">
@@ -201,5 +201,4 @@ function CEditor(props: Props) {
         </Dialog>
     );
 }
-export default CEditor;
-// 
+export default CAddCitizen;

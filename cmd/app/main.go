@@ -71,6 +71,7 @@ func main() {
 	app.Use(middleware.CORS())
 
 	app.GET("/", handler.FetchCitizens)
+	app.GET("/meta", handler.GetMetadata)
 	app.POST("/", handler.CreateCitizen)
 	app.PUT("/", handler.UpdateCitizen)
 	app.DELETE("/:id", handler.DeleteCitizen)

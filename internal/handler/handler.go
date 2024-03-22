@@ -82,3 +82,16 @@ func DeleteCitizen(c echo.Context) error {
 	}
 	return c.String(200, "Deleted")
 }
+
+func GetMetadata(c echo.Context) error {
+	count, err := services.GetCount()
+	if err != nil {
+		return err
+	}
+	type response struct {
+		Count int64 `json:"count"`
+	}
+	var r response
+	r.Count = count
+	return c.JSON(200, r)
+}

@@ -16,6 +16,7 @@ type Props = {
 };
 
 function CTable(props : Props) {
+
     return (
         <Table>
             <TableCaption>A list of citizens.</TableCaption>
