@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -67,6 +68,7 @@ func main() {
 	log.Println("Starting server on", port)
 	app := echo.New()
 	app.Validator = &CustomValidator{validator: validator.New()}
+	app.Use(middleware.CORS())
 
 	app.GET("/", handler.FetchCitizens)
 	app.POST("/", handler.CreateCitizen)
