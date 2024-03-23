@@ -25,9 +25,9 @@ function CPagination(props: Props) {
                         <PaginationPrevious onClick={() => props.handlePageChange(props.curPage - 1)}/>
                     </PaginationItem>
                 )}
-                {props.pages.map((p) => {
+                {props.pages.map((p, idx) => {
                     return (
-                        <PaginationItem>
+                        <PaginationItem key={idx}>
                             <PaginationLink onClick={() => props.handlePageChange(p)} isActive={p === props.curPage}>{p}</PaginationLink>
                         </PaginationItem>
                     );

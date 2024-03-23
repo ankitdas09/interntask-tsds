@@ -17,14 +17,16 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { TCitizen } from "../../../types";
+import { toast } from "react-toastify";
+import axios from "axios";
 
-// type Props = {
-//     citizen: TCitizen;
-// };
+type Props = {
+    fetchPageData: () => Promise<void>;
+};
 
-function CAddCitizen() {
+function CEditor(props: Props) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [data, setData] = useState<TCitizen>({
@@ -39,21 +41,41 @@ function CAddCitizen() {
         pincode: "",
     });
 
-    useEffect(() => {
-        setLoading(false);
+    async function handleAdd(e: FormEvent) {
+        e.preventDefault();
+        setLoading(true);
         setError(false);
-        // setData({
-        //     _id: props.citizen._id,
-        //     first_name: props.citizen.first_name,
-        //     last_name: props.citizen.last_name,
-        //     date_of_birth: props.citizen.date_of_birth,
-        //     gender: props.citizen.gender,
-        //     address: props.citizen.address,
-        //     city: props.citizen.city,
-        //     state: props.citizen.state,
-        //     pincode: props.citizen.pincode,
-        // });
-    }, []);
+        const response = axios.post("http://localhost:8000", {
+            ...data,
+            date_of_birth: new Date(data.date_of_birth),
+        });
+        toast.promise(response, {
+            pending: "Saving...",
+            success: "Citizen added!",
+            error: "Something went wrong!",
+        });
+        response
+            .then(() => {
+                setLoading(false);
+                setError(false);
+                props.fetchPageData();
+                setData({
+                    ...data,
+                    _id: "",
+                    first_name: "",
+                    last_name: "",
+                    date_of_birth: "",
+                    address: "",
+                    city: "",
+                    state: "",
+                    pincode: "",
+                });
+            })
+            .catch(() => {
+                setLoading(false);
+                setError(true);
+            });
+    }
 
     return (
         <Dialog>
@@ -65,17 +87,16 @@ function CAddCitizen() {
             <DialogContent className="sm:max-w-[525px] max-h-[700px] overflow-scroll">
                 <DialogHeader>
                     <DialogTitle>Add Citizen</DialogTitle>
-                    <DialogDescription>
-                        Add new citizen.
-                    </DialogDescription>
+                    <DialogDescription>Add a new citizen.</DialogDescription>
                 </DialogHeader>
-                <form action="/">
+                <form action="/" onSubmit={handleAdd}>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">
                                 First Name
                             </Label>
                             <Input
+                                disabled={loading}
                                 id="name"
                                 value={data.first_name}
                                 className="col-span-3"
@@ -90,6 +111,7 @@ function CAddCitizen() {
                                 Last Name
                             </Label>
                             <Input
+                                disabled={loading}
                                 id="username"
                                 value={data.last_name}
                                 className="col-span-3"
@@ -104,6 +126,7 @@ function CAddCitizen() {
                                 Date of Birth
                             </Label>
                             <Input
+                                disabled={loading}
                                 id="dob"
                                 className="col-span-3"
                                 type="date"
@@ -118,10 +141,13 @@ function CAddCitizen() {
                             <Label htmlFor="gender" className="text-right">
                                 Gender
                             </Label>
-                            <Select required onValueChange={(e) => {
-                                setData({...data, gender: e})
-                            }}>
-                                <SelectTrigger className="w-[342px]">
+                            <Select
+                                required
+                                onValueChange={(e) => {
+                                    setData({ ...data, gender: e });
+                                }}
+                            >
+                                <SelectTrigger className="w-[342px]" disabled={loading}>
                                     <SelectValue placeholder="Gender" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -136,6 +162,7 @@ function CAddCitizen() {
                                 Address
                             </Label>
                             <Input
+                                disabled={loading}
                                 id="address"
                                 value={data.address}
                                 className="col-span-3"
@@ -150,6 +177,7 @@ function CAddCitizen() {
                                 City
                             </Label>
                             <Input
+                                disabled={loading}
                                 id="city"
                                 value={data.city}
                                 className="col-span-3"
@@ -164,6 +192,7 @@ function CAddCitizen() {
                                 State
                             </Label>
                             <Input
+                                disabled={loading}
                                 id="state"
                                 value={data.state}
                                 className="col-span-3"
@@ -178,6 +207,7 @@ function CAddCitizen() {
                                 Pincode
                             </Label>
                             <Input
+                                disabled={loading}
                                 id="pincode"
                                 value={data.pincode}
                                 className="col-span-3"
@@ -189,11 +219,8 @@ function CAddCitizen() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit">Save changes</Button>
-                    </DialogFooter>
-                    <DialogFooter>
-                        <Button className="bg-red-800 mt-2" type="submit">
-                            Delete Citizen
+                        <Button type="submit" disabled={loading}>
+                            Save citizen
                         </Button>
                     </DialogFooter>
                 </form>
@@ -201,4 +228,4 @@ function CAddCitizen() {
         </Dialog>
     );
 }
-export default CAddCitizen;
+export default CEditor;

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/ankitdas09/interntask-tsds/internal/api"
 	"github.com/ankitdas09/interntask-tsds/internal/model"
@@ -29,9 +30,10 @@ func GetCount() (int64, error) {
 
 func FetchCitizens(page int, limit int) (*[]model.Citizen, error) {
 	skip := (page - 1) * limit
-	opts := options.Find()
+	opts := options.Find().SetSort(bson.D{{Key: "created_at", Value: -1}})
 	opts.SetSkip(int64(skip))
 	opts.SetLimit(int64(limit))
+
 	filter := bson.D{{}}
 
 	cursor, err := coll.Find(context.TODO(), filter, opts)
@@ -63,6 +65,7 @@ func InsertNewCitizen(c *api.CreateCitizen) (*model.Citizen, error) {
 	citizen.City = c.City
 	citizen.State = c.State
 	citizen.Pincode = c.Pincode
+	citizen.CreatedAt = time.Now()
 
 	_, err := coll.InsertOne(context.TODO(), citizen)
 	if err != nil {

@@ -13,6 +13,7 @@ import { TCitizen } from "types";
 
 type Props = {
     citizens: TCitizen[] | null;
+    fetchPageData: () => Promise<void>
 };
 
 function CTable(props : Props) {
@@ -35,7 +36,7 @@ function CTable(props : Props) {
             </TableHeader>
             <TableBody>
                 {props.citizens?.map((invoice) => (
-                    <TableRow key={invoice.first_name}>
+                    <TableRow key={invoice._id}>
                         <TableCell className="font-medium">{invoice.first_name}</TableCell>
                         <TableCell className="font-medium">{invoice.last_name}</TableCell>
                         <TableCell>{invoice.date_of_birth.split("T")[0]}</TableCell>
@@ -45,7 +46,7 @@ function CTable(props : Props) {
                         <TableCell>{invoice.state}</TableCell>
                         <TableCell>{invoice.pincode}</TableCell>
                         <TableCell className="text-right">
-                            <CEditor citizen={invoice} />
+                            <CEditor citizen={invoice} fetchPageData={props.fetchPageData}/>
                         </TableCell>
                     </TableRow>
                 ))}

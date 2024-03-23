@@ -4,6 +4,8 @@ import CTable from "./components/table";
 import { TCitizen } from "types";
 import axios from "axios";
 import CAddCitizen from "./components/add";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
     const [page, setPage] = useState(1);
@@ -25,6 +27,7 @@ function App() {
     async function fetchPageData() {
         try {
             setLoading(true);
+            fetchMetadata();
             const resp = await axios.get(`http://localhost:8000/?page=${page}&limit=10`);
             setCitizens(resp.data);
             setLoading(false);
@@ -40,6 +43,7 @@ function App() {
             setLoading(true);
             const resp = await axios.get(`http://localhost:8000/meta`);
             setTotalPages(resp.data.count);
+            console.log(resp.data);
             setLoading(false);
             setError(false);
         } catch (error) {
@@ -49,29 +53,32 @@ function App() {
     }
 
     useEffect(() => {
-        fetchMetadata();
         fetchPageData();
     }, [page]);
 
     return (
         <>
+            <ToastContainer />
             <div>
                 <nav className="h-16 bg-slate-800 font-bold text-xl text-white flex justify-start items-center">
-                    <div className="container">
+                    <div className="container p-3">
                         <p>Citizen Management</p>
                     </div>
                 </nav>
                 <div className="container p-3">
-                    <CAddCitizen />
-                    {loading && !error && "Loading..."}
-                    {!loading && !error && <CTable citizens={citizens} />}
+                    <CAddCitizen fetchPageData={fetchPageData} />
+                    <br />
+                    {loading && !error && <span className="loader"></span>}
+                    {!loading && !error && (
+                        <CTable citizens={citizens} fetchPageData={fetchPageData} />
+                    )}
                     {error && "Something went wrong!"}
                     {!loading && !error && (
                         <CPagination
                             curPage={page}
                             handlePageChange={setPage}
                             pages={getAdjacentPages()}
-                            last={totalPages / 10}
+                            last={Math.floor(totalPages / 10) + (totalPages % 10 ? 1 : 0)}
                         />
                     )}
                 </div>

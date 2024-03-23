@@ -16,4 +16,5 @@ type Citizen struct {
 	City        string             `bson:"city" json:"city"`
 	State       string             `bson:"state" json:"state"`
 	Pincode     string             `bson:"pincode" json:"pincode"`
+	CreatedAt   time.Time          `bson:"created_at"`
 }

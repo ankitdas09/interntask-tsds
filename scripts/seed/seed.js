@@ -11,7 +11,7 @@ function getRandomPincode() {
 }
 
 async function sendCitizenDetails() {
-  for (let i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 5; i++) {
     const citizenDetails = {
       first_name: `Citizen${i}`,
       last_name: `World${i+2}`,
